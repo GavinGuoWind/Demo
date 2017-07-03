@@ -1,26 +1,22 @@
 package io;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.List;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.dom4j.Node;
+import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 import org.junit.Test;
 
+import java.io.*;
+import java.util.HashSet;
+import java.util.Set;
+
 public class IODemo {
+	
+	public static void main(String[] args) {
+		System.out.println("Hello World!");
+	}
 	
 	@Test
 	public void copyTestWithChar() {
@@ -36,19 +32,41 @@ public class IODemo {
 		System.out.println(copyWithByte(copiedFilePath, savePath));
 	}
 	
+	//xml 文件操作
 	@Test
 	public void dom4j(){
 		SAXReader reader = new SAXReader();
+		XMLWriter writer = null;
 		try {
+			//读取
 			Document document = reader.read(new File("demo.html"));
 			System.out.println(document.getRootElement());
 			Element root = document.getRootElement();
 			System.out.println(root.element("head"));
-			
-			Node title = root.selectSingleNode("//title");
+			Element title = (Element) root.selectSingleNode("//title");
+			//修改
 			title.setText("Demo");
+			System.out.println(title.getTextTrim());
+			//保存
+			OutputFormat format = OutputFormat.createPrettyPrint();
+			writer = new XMLWriter(new FileOutputStream("demo.html"),format);
+			writer.write(document);
 		} catch (DocumentException e) {
 			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally{
+			if (writer != null) {
+				try {
+					writer.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	
